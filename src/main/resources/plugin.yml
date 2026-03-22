@@ -1,0 +1,7 @@
+name: ChessCraftPlaceholders
+version: 1.0
+main: de.nohope.chesscraftplaceholders.Main
+api-version: "1.20"
+depend:
+  - PlaceholderAPI
+  - ChessCraft

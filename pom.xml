@@ -1,0 +1,78 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://www.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>de.nohope</groupId>
+  <artifactId>chesscraft-placeholders</artifactId>
+  <version>1.0</version>
+
+  <properties>
+    <java.version>17</java.version>
+  </properties>
+
+  <dependencies>
+
+    <!-- Spigot API (LOKAL) -->
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>1.20.1</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/libs/spigot-api-1.20.1-R0.1-20230906.201746-63.jar</systemPath>
+    </dependency>
+
+    <!-- PlaceholderAPI (LOKAL) -->
+    <dependency>
+      <groupId>me.clip</groupId>
+      <artifactId>placeholderapi</artifactId>
+      <version>2.12.2</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/libs/PlaceholderAPI-2.12.2.jar</systemPath>
+    </dependency>
+
+    <!-- ChessCraft (LOKAL) -->
+    <dependency>
+      <groupId>xyz.jpenilla</groupId>
+      <artifactId>chesscraft</artifactId>
+      <version>0.5.3</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/libs/chesscraft-0.5.3-all.jar</systemPath>
+    </dependency>
+
+    <!-- Adventure API (WICHTIG für ChessCraft!) -->
+    <dependency>
+      <groupId>net.kyori</groupId>
+      <artifactId>adventure-api</artifactId>
+      <version>4.14.0</version>
+    </dependency>
+
+    <!-- Annotations -->
+    <dependency>
+      <groupId>org.jetbrains</groupId>
+      <artifactId>annotations</artifactId>
+      <version>24.0.1</version>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+
+      <!-- Compiler -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.10.1</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>
