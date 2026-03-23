@@ -8,23 +8,30 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.chessCraftService = new ChessCraftService(this);
+        try {
+            chessCraftService = new ChessCraftService(this);
 
-        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") == null) {
-            getLogger().severe("PlaceholderAPI wurde nicht gefunden!");
-            return;
-        }
+            if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+                new ChessCraftPlaceholder(this, chessCraftService).register();
+            } else {
+                getLogger().warning("PlaceholderAPI nicht gefunden, Placeholder werden nicht registriert.");
+            }
 
-        boolean registered = new ChessCraftPlaceholder(this).register();
-
-        if (registered) {
-            getLogger().info("ChessCraft Placeholder erfolgreich registriert!");
-        } else {
-            getLogger().severe("ChessCraft Placeholder konnte NICHT registriert werden!");
+            getLogger().info("ChessCraftPlaceholderAddon aktiviert.");
+        } catch (Exception e) {
+            getLogger().severe("Fehler beim Starten des Plugins: " + e.getMessage());
+            e.printStackTrace();
+            getServer().getPluginManager().disablePlugin(this);
         }
     }
 
     public ChessCraftService getChessCraftService() {
         return chessCraftService;
+    }
+
+    public void onDisable() {
+        if (chessCraftService != null) {
+            chessCraftService.close();
+        }
     }
 }

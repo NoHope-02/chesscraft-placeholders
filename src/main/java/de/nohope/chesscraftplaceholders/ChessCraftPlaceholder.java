@@ -9,7 +9,7 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
 
     private final Main plugin;
 
-    public ChessCraftPlaceholder(Main plugin) {
+    public ChessCraftPlaceholder(Main plugin, ChessCraftService chessCraftService) {
         this.plugin = plugin;
     }
 
