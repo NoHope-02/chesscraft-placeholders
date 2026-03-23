@@ -35,7 +35,7 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return "1.1.1";
+        return "1.2.0";
     }
 
     @Override
@@ -68,6 +68,12 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
 
             case "rated_matches":
                 return String.valueOf(service.getRatedMatches(player.getUniqueId()));
+
+            case "username":
+                return service.getUsername(player.getUniqueId());
+
+            case "displayname":
+                return service.getDisplayname(player.getUniqueId());
 
             default:
                 if (identifier.toLowerCase().startsWith("top_")) {

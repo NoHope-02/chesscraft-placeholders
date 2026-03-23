@@ -134,6 +134,9 @@ public class ChessCraftService {
             if (rs.next()) {
                 return rs.getInt("peak_rating");
             }
+            if (connection == null || connection.isClosed()) {
+                connect();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -150,6 +153,9 @@ public class ChessCraftService {
             if (rs.next()) {
                 return rs.getInt("rated_matches");
             }
+            if (connection == null || connection.isClosed()) {
+                connect();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -157,88 +163,69 @@ public class ChessCraftService {
     }
     public LastMatchData getLastMatchData(UUID playerUuid) {
         String sql = """
-        SELECT chesscraft_matches.id,
-               chesscraft_matches.white_cpu,
-               chesscraft_matches.white_player_id,
-               chesscraft_matches.black_cpu,
-               chesscraft_matches.black_player_id,
-               chesscraft_matches.last_updated,
-               chesscraft_complete_matches.result_type,
-               chesscraft_complete_matches.result_color,
-               chesscraft_complete_matches.white_elo_change,
-               chesscraft_complete_matches.black_elo_change
-        FROM chesscraft_matches
-        RIGHT OUTER JOIN chesscraft_complete_matches
-            ON chesscraft_matches.id = chesscraft_complete_matches.id
-        WHERE white_player_id = ? OR black_player_id = ?
-        ORDER BY chesscraft_matches.last_updated DESC
-        LIMIT 1
-        """;
+    SELECT chesscraft_matches.id,
+           chesscraft_matches.white_cpu,
+           chesscraft_matches.white_player_id,
+           chesscraft_matches.black_cpu,
+           chesscraft_matches.black_player_id,
+           chesscraft_matches.last_updated,
+           chesscraft_complete_matches.result_type,
+           chesscraft_complete_matches.result_color,
+           chesscraft_complete_matches.white_elo_change,
+           chesscraft_complete_matches.black_elo_change
+    FROM chesscraft_matches
+    RIGHT OUTER JOIN chesscraft_complete_matches
+        ON chesscraft_matches.id = chesscraft_complete_matches.id
+    WHERE white_player_id = ? OR black_player_id = ?
+    ORDER BY chesscraft_matches.last_updated DESC
+    LIMIT 1
+    """;
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, playerUuid.toString());
-            stmt.setString(2, playerUuid.toString());
+        try {
+            if (connection == null || connection.isClosed()) {
+                connect();
+            }
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (!rs.next()) {
-                    return null;
-                }
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, playerUuid.toString());
+                stmt.setString(2, playerUuid.toString());
 
-                String whitePlayerId = rs.getString("white_player_id");
-                String blackPlayerId = rs.getString("black_player_id");
-                boolean whiteCpu = rs.getBoolean("white_cpu");
-                boolean blackCpu = rs.getBoolean("black_cpu");
-
-                boolean isWhite = playerUuid.toString().equalsIgnoreCase(whitePlayerId);
-
-                String resultColor = rs.getString("result_color");
-                String resultType = rs.getString("result_type");
-
-                int eloChange = isWhite
-                        ? rs.getInt("white_elo_change")
-                        : rs.getInt("black_elo_change");
-
-                String opponent;
-                if (isWhite) {
-                    if (blackCpu) {
-                        opponent = "CPU";
-                    } else {
-                        opponent = getUsernameByUuid(blackPlayerId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (!rs.next()) {
+                        return null;
                     }
-                } else {
-                    if (whiteCpu) {
-                        opponent = "CPU";
+
+                    UUID whitePlayerId = rs.getObject("white_player_id", UUID.class);
+                    UUID blackPlayerId = rs.getObject("black_player_id", UUID.class);
+                    boolean whiteCpu = rs.getBoolean("white_cpu");
+                    boolean blackCpu = rs.getBoolean("black_cpu");
+
+                    boolean isWhite = playerUuid.equals(whitePlayerId);
+
+                    String resultColor = rs.getString("result_color");
+                    String resultType = rs.getString("result_type");
+
+                    int eloChange = isWhite
+                            ? rs.getInt("white_elo_change")
+                            : rs.getInt("black_elo_change");
+
+                    String opponent;
+                    if (isWhite) {
+                        opponent = blackCpu ? "CPU" : getUsername(blackPlayerId);
                     } else {
-                        opponent = getUsernameByUuid(whitePlayerId);
+                        opponent = whiteCpu ? "CPU" : getUsername(whitePlayerId);
                     }
+
+                    String result = parseResult(isWhite, resultColor, resultType, eloChange);
+
+                    return new LastMatchData(result, opponent, eloChange);
                 }
-
-                String result = parseResult(isWhite, resultColor, resultType, eloChange);
-
-                return new LastMatchData(result, opponent, eloChange);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return null;
-    }
-    private String getUsernameByUuid(String uuid) {
-        String sql = "SELECT username FROM chesscraft_players WHERE id = ?";
-
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, uuid);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("username");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return "Unknown";
     }
     private String parseResult(boolean isWhite, String resultColor, String resultType, int eloChange) {
 
@@ -278,6 +265,50 @@ public class ChessCraftService {
     public int getLastEloChange(UUID uuid) {
         LastMatchData data = getLastMatchData(uuid);
         return data != null ? data.getEloChange() : 0;
+    }
+    public String getUsername(UUID uuid) {
+        try {
+            if (connection == null || connection.isClosed()) {
+                connect();
+            }
+
+            String sql = "SELECT username FROM chesscraft_players WHERE id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, uuid.toString());
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getString("username");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "Unknown";
+    }
+    public String getDisplayname(UUID uuid) {
+        try {
+            if (connection == null || connection.isClosed()) {
+                connect();
+            }
+
+            String sql = "SELECT displayname FROM chesscraft_players WHERE id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, uuid.toString());
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getString("displayname");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "Unknown";
     }
     public void close() {
         try {
