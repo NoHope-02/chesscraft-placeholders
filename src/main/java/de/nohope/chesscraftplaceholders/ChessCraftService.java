@@ -6,6 +6,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.sql.*;
+import java.util.UUID;
 
 public class ChessCraftService {
 
@@ -122,7 +123,38 @@ public class ChessCraftService {
 
         return "N/A";
     }
+    public int getPeakElo(UUID uuid) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT peak_rating FROM chesscraft_players WHERE id = ?"
+            );
+            stmt.setString(1, uuid.toString());
 
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("peak_rating");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    public int getRatedMatches(UUID uuid) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT rated_matches FROM chesscraft_players WHERE id = ?"
+            );
+            stmt.setString(1, uuid.toString());
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("rated_matches");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
     public void close() {
         try {
             if (connection != null && !connection.isClosed()) {

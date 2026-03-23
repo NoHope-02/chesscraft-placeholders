@@ -51,6 +51,10 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
                 return String.valueOf(service.getElo(player));
             case "rank":
                 return String.valueOf(service.getRank(player));
+            case "peakelo":
+                return String.valueOf(service.getPeakElo(player.getUniqueId()));
+            case "rated_matches":
+                return String.valueOf(service.getRatedMatches(player.getUniqueId()));
             default:
                 if (identifier.toLowerCase().startsWith("top_")) {
                     try {
