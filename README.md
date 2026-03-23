@@ -1,45 +1,64 @@
 # ♟️ ChessCraft Placeholders
 
-A simple **PlaceholderAPI addon** for [ChessCraft](https://github.com/jpenilla/chesscraft)  
-that provides Elo, rank, leaderboard and match-related placeholders.
+A **PlaceholderAPI addon** for [ChessCraft](https://github.com/jpenilla/chesscraft)  
+providing player stats, leaderboard data and match information.
 
 ---
 
 ## ✨ Features
 
-- 📊 Player Elo & peak Elo
-- 🏆 Player rank system (matches ChessCraft leaderboard)
-- 📈 Top leaderboard placeholders
-- 🧠 Last match information (result, opponent, Elo change)
-- ⚡ Works directly with ChessCraft database (no config required)
+- 📊 Player stats (Elo, peak Elo, rank, matches)
+- 🏆 Advanced leaderboard placeholders
+- ♟️ Detailed last match information
+- 🧠 Clean and lightweight implementation
+- ⚡ Works directly with the ChessCraft database
 
 ---
 
 ## 📦 Placeholders
 
 ### 👤 Player
+
 | Placeholder | Description |
 |------------|------------|
-| `%chesscraft_elo%` | Shows the player's current Elo |
-| `%chesscraft_peak_elo%` | Shows the player's highest reached Elo |
-| `%chesscraft_rank%` | Shows the player's rank |
-| `%chesscraft_rated_matches%` | Shows the number of rated matches played |
+| `%chesscraft_username%` | Player username |
+| `%chesscraft_displayname%` | Player display name |
+| `%chesscraft_elo%` | Current Elo |
+| `%chesscraft_peak_elo%` | Highest reached Elo |
+| `%chesscraft_rank%` | Leaderboard rank |
+| `%chesscraft_rated_matches%` | Number of rated matches |
 
 ---
 
 ### 🏆 Leaderboard
+
 | Placeholder | Description |
 |------------|------------|
-| `%chesscraft_top_1%` → `%chesscraft_top_10%` | Shows top players with Elo |
+| `%chesscraft_top_1%` → `%chesscraft_top_10%` | Formatted top players |
+| `%chesscraft_top_1_name%` | Username of player |
+| `%chesscraft_top_1_displayname%` | Display name |
+| `%chesscraft_top_1_elo%` | Current Elo |
+| `%chesscraft_top_1_peak_elo%` | Peak Elo |
+| `%chesscraft_top_1_rated_matches%` | Rated matches |
+
+👉 Works dynamically for any position (e.g. `top_2`, `top_5`, etc.)
 
 ---
 
 ### ♟️ Last Match
+
 | Placeholder | Description |
 |------------|------------|
-| `%chesscraft_last_result%` | Shows result of last match (win/loss/draw) |
-| `%chesscraft_last_opponent%` | Shows last opponent (or CPU) |
-| `%chesscraft_last_elo_change%` | Shows Elo change from last match |
+| `%chesscraft_last_result%` | win / loss / draw |
+| `%chesscraft_last_opponent%` | Opponent username |
+| `%chesscraft_last_opponent_displayname%` | Opponent display name |
+| `%chesscraft_last_elo_change%` | Elo change |
+| `%chesscraft_last_elo_after%` | Player Elo after match |
+| `%chesscraft_last_opponent_elo_after%` | Opponent Elo after match |
+| `%chesscraft_last_side%` | white / black |
+| `%chesscraft_last_type%` | pvp / cpu |
+| `%chesscraft_last_updated%` | Timestamp of match |
+| `%chesscraft_last_moves_count%` | Number of moves |
 
 ---
 
@@ -55,51 +74,26 @@ that provides Elo, rank, leaderboard and match-related placeholders.
 ## 🚀 Installation
 
 1. Download the latest release
-2. Put the `.jar` file into your `/plugins` folder
+2. Place the `.jar` file into your `/plugins` folder
 3. Restart your server
-4. Run:
-   /papi reload
+4. Run: /papi reload
 
 ---
 
 ## 💡 Example
-♔ Chess Leaderboard ♔
+♔ Chess Stats ♔
 
-%chesscraft_top_1%
-%chesscraft_top_2%
-%chesscraft_top_3%
+Elo: %chesscraft_elo%
+Rank: %chesscraft_rank%
 
+Last Match:
+%chesscraft_last_result% vs %chesscraft_last_opponent%
+(+%chesscraft_last_elo_change%)
+♔ Chess Stats ♔
 
----
+Elo: %chesscraft_elo%
+Rank: %chesscraft_rank%
 
-## ⚠️ Important
-
-- This plugin is **not affiliated with ChessCraft**
-- It only reads data from the ChessCraft database
-- Make sure ChessCraft is installed and working
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License.
-
----
-
-## ❤️ Credits
-
-- [ChessCraft](https://github.com/jpenilla/chesscraft) by jpenilla
-- [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI)
-
----
-
-## 🛠️ Future Ideas
-
-- Match history placeholders
-- Win/Loss/Draw statistics
-- Configurable formats (colors, prefixes, etc.)
-- Caching system for better performance
-
----
-
-Made with ❤️ by NoHope
+Last Match:
+%chesscraft_last_result% vs %chesscraft_last_opponent%
+(+%chesscraft_last_elo_change%)
