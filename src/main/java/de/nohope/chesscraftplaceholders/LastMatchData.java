@@ -8,8 +8,13 @@ public class LastMatchData {
     private final String type;
     private final String updated;
     private final int movesCount;
+    private final String opponentDisplayname;
+    private final int eloAfter;
+    private final int opponentEloAfter;
 
-    public LastMatchData(String result, String opponent, int eloChange, String side, String type, String updated, int movesCount) {
+    public LastMatchData(String result, String opponent, int eloChange, String side, String type,
+                         String updated, int movesCount, String opponentDisplayname,
+                         int eloAfter, int opponentEloAfter) {
         this.result = result;
         this.opponent = opponent;
         this.eloChange = eloChange;
@@ -17,6 +22,9 @@ public class LastMatchData {
         this.type = type;
         this.updated = updated;
         this.movesCount = movesCount;
+        this.opponentDisplayname = opponentDisplayname;
+        this.eloAfter = eloAfter;
+        this.opponentEloAfter = opponentEloAfter;
     }
 
     public String getResult() {
@@ -45,5 +53,16 @@ public class LastMatchData {
 
     public int getMovesCount() {
         return movesCount;
+    }
+    public String getOpponentDisplayname() {
+        return opponentDisplayname;
+    }
+
+    public int getEloAfter() {
+        return eloAfter;
+    }
+
+    public int getOpponentEloAfter() {
+        return opponentEloAfter;
     }
 }

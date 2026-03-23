@@ -106,6 +106,10 @@ public class ChessCraftService {
     }
     public int getPeakElo(UUID uuid) {
         try {
+            if (connection == null || connection.isClosed()) {
+                connect();
+            }
+
             PreparedStatement stmt = connection.prepareStatement(
                     "SELECT peak_rating FROM chesscraft_players WHERE id = ?"
             );
@@ -115,9 +119,6 @@ public class ChessCraftService {
             if (rs.next()) {
                 return rs.getInt("peak_rating");
             }
-            if (connection == null || connection.isClosed()) {
-                connect();
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -125,6 +126,10 @@ public class ChessCraftService {
     }
     public int getRatedMatches(UUID uuid) {
         try {
+            if (connection == null || connection.isClosed()) {
+                connect();
+            }
+
             PreparedStatement stmt = connection.prepareStatement(
                     "SELECT rated_matches FROM chesscraft_players WHERE id = ?"
             );
@@ -133,9 +138,6 @@ public class ChessCraftService {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt("rated_matches");
-            }
-            if (connection == null || connection.isClosed()) {
-                connect();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -151,6 +153,8 @@ public class ChessCraftService {
            chesscraft_matches.black_player_id,
            chesscraft_matches.last_updated,
            chesscraft_matches.moves,
+           chesscraft_complete_matches.white_elo,
+           chesscraft_complete_matches.black_elo,
            chesscraft_complete_matches.result_type,
            chesscraft_complete_matches.result_color,
            chesscraft_complete_matches.white_elo_change,
@@ -192,10 +196,24 @@ public class ChessCraftService {
                             : rs.getInt("black_elo_change");
 
                     String opponent;
+                    String opponentDisplayname;
+
                     if (isWhite) {
-                        opponent = blackCpu ? "CPU" : getUsername(blackPlayerId);
+                        if (blackCpu) {
+                            opponent = "CPU";
+                            opponentDisplayname = "CPU";
+                        } else {
+                            opponent = getUsername(blackPlayerId);
+                            opponentDisplayname = getDisplayname(blackPlayerId);
+                        }
                     } else {
-                        opponent = whiteCpu ? "CPU" : getUsername(whitePlayerId);
+                        if (whiteCpu) {
+                            opponent = "CPU";
+                            opponentDisplayname = "CPU";
+                        } else {
+                            opponent = getUsername(whitePlayerId);
+                            opponentDisplayname = getDisplayname(whitePlayerId);
+                        }
                     }
                     String side = isWhite ? "white" : "black";
 
@@ -206,9 +224,17 @@ public class ChessCraftService {
                     String moves = rs.getString("moves");
                     int movesCount = (moves == null || moves.isBlank()) ? 0 : moves.split(",").length;
 
-                    String result = parseResult(isWhite, resultColor, resultType, eloChange);
+                    String result = parseResult(resultType, eloChange);
 
-                    return new LastMatchData(result, opponent, eloChange, side, type, updated, movesCount);
+                    int eloAfter = isWhite
+                            ? rs.getInt("white_elo")
+                            : rs.getInt("black_elo");
+
+                    int opponentEloAfter = isWhite
+                            ? rs.getInt("black_elo")
+                            : rs.getInt("white_elo");
+
+                    return new LastMatchData(result, opponent, eloChange, side, type, updated, movesCount,opponentDisplayname,eloAfter,opponentEloAfter);
                 }
             }
         } catch (SQLException e) {
@@ -217,9 +243,7 @@ public class ChessCraftService {
 
         return null;
     }
-    private String parseResult(boolean isWhite, String resultColor, String resultType, int eloChange) {
-
-        // 1. Elo entscheidet (beste Quelle)
+    private String parseResult(String resultType, int eloChange) {
         if (eloChange > 0) {
             return "win";
         }
@@ -228,7 +252,6 @@ public class ChessCraftService {
             return "loss";
         }
 
-        // 2. Fallback für Draws
         if (resultType != null) {
             String lowerType = resultType.toLowerCase();
 
@@ -355,6 +378,20 @@ public class ChessCraftService {
     public int getLastMovesCount(UUID uuid) {
         LastMatchData data = getLastMatchData(uuid);
         return data != null ? data.getMovesCount() : 0;
+    }
+    public String getLastOpponentDisplayname(UUID uuid) {
+        LastMatchData data = getLastMatchData(uuid);
+        return data != null ? data.getOpponentDisplayname() : "none";
+    }
+
+    public int getLastEloAfter(UUID uuid) {
+        LastMatchData data = getLastMatchData(uuid);
+        return data != null ? data.getEloAfter() : 0;
+    }
+
+    public int getLastOpponentEloAfter(UUID uuid) {
+        LastMatchData data = getLastMatchData(uuid);
+        return data != null ? data.getOpponentEloAfter() : 0;
     }
     public void close() {
         try {
