@@ -71,7 +71,7 @@ public class ChessCraftService {
                 connect();
             }
 
-            String sql = "SELECT id FROM chesscraft_players WHERE rated_matches ORDER BY rating DESC, username";
+            String sql = "SELECT id FROM chesscraft_players WHERE rated_matches>0 ORDER BY rating DESC, username";
             try (PreparedStatement ps = connection.prepareStatement(sql);
                  ResultSet rs = ps.executeQuery()) {
 
@@ -102,7 +102,7 @@ public class ChessCraftService {
                 connect();
             }
 
-            String sql = "SELECT username, rating FROM chesscraft_players WHERE rated_matches ORDER BY rating DESC, username LIMIT 1 OFFSET ?";
+            String sql = "SELECT username, rating FROM chesscraft_players WHERE rated_matches>0 ORDER BY rating DESC, username LIMIT 1 OFFSET ?";
             try (PreparedStatement ps = connection.prepareStatement(sql)) {
                 ps.setInt(1, position - 1);
 
