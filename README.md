@@ -58,3 +58,48 @@ that provides Elo, rank, leaderboard and match-related placeholders.
 2. Put the `.jar` file into your `/plugins` folder
 3. Restart your server
 4. Run:
+   /papi reload
+
+---
+
+## 💡 Example
+♔ Chess Leaderboard ♔
+
+%chesscraft_top_1%
+%chesscraft_top_2%
+%chesscraft_top_3%
+
+
+---
+
+## ⚠️ Important
+
+- This plugin is **not affiliated with ChessCraft**
+- It only reads data from the ChessCraft database
+- Make sure ChessCraft is installed and working
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License.
+
+---
+
+## ❤️ Credits
+
+- [ChessCraft](https://github.com/jpenilla/chesscraft) by jpenilla
+- [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI)
+
+---
+
+## 🛠️ Future Ideas
+
+- Match history placeholders
+- Win/Loss/Draw statistics
+- Configurable formats (colors, prefixes, etc.)
+- Caching system for better performance
+
+---
+
+Made with ❤️ by NoHope
