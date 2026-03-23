@@ -35,7 +35,7 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return "1.0";
+        return "1.1.1";
     }
 
     @Override
@@ -47,14 +47,28 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
         ChessCraftService service = plugin.getChessCraftService();
 
         switch (identifier.toLowerCase()) {
+            case "last_result":
+                return service.getLastResult(player.getUniqueId());
+
+            case "last_opponent":
+                return service.getLastOpponent(player.getUniqueId());
+
+            case "last_elo_change":
+                int change = service.getLastEloChange(player.getUniqueId());
+                return change > 0 ? "+" + change : String.valueOf(change);
+
             case "elo":
                 return String.valueOf(service.getElo(player));
+
             case "rank":
                 return String.valueOf(service.getRank(player));
+
             case "peakelo":
                 return String.valueOf(service.getPeakElo(player.getUniqueId()));
+
             case "rated_matches":
                 return String.valueOf(service.getRatedMatches(player.getUniqueId()));
+
             default:
                 if (identifier.toLowerCase().startsWith("top_")) {
                     try {
