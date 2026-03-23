@@ -77,13 +77,59 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
 
             default:
                 if (identifier.toLowerCase().startsWith("top_")) {
+                    String[] parts = identifier.toLowerCase().split("_");
+
                     try {
-                        int pos = Integer.parseInt(identifier.substring(4));
-                        return service.getTop(pos);
+                        if (parts.length == 2) {
+                            int pos = Integer.parseInt(parts[1]);
+                            return service.getTop(pos);
+                        }
+
+                        if (parts.length == 3) {
+                            int pos = Integer.parseInt(parts[1]);
+                            String field = parts[2];
+
+                            TopPlayerData data = service.getTopPlayerData(pos);
+                            if (data == null) {
+                                return "N/A";
+                            }
+
+                            switch (field) {
+                                case "name":
+                                    return data.getUsername();
+                                case "displayname":
+                                    return data.getDisplayname();
+                                case "elo":
+                                    return String.valueOf(data.getElo());
+                                default:
+                                    return null;
+                            }
+                        }
+
+                        if (parts.length == 4) {
+                            int pos = Integer.parseInt(parts[1]);
+                            String field = parts[2] + "_" + parts[3];
+
+                            TopPlayerData data = service.getTopPlayerData(pos);
+                            if (data == null) {
+                                return "N/A";
+                            }
+
+                            switch (field) {
+                                case "peak_elo":
+                                    return String.valueOf(data.getPeakElo());
+                                case "rated_matches":
+                                    return String.valueOf(data.getRatedMatches());
+                                default:
+                                    return null;
+                            }
+                        }
+
                     } catch (NumberFormatException e) {
                         return null;
                     }
                 }
+
                 return null;
         }
     }

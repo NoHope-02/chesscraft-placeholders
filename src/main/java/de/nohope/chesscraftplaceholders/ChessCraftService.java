@@ -98,29 +98,10 @@ public class ChessCraftService {
     }
 
     public String getTop(int position) {
-        try {
-            if (connection == null || connection.isClosed()) {
-                connect();
-            }
-
-            String sql = "SELECT username, rating FROM chesscraft_players WHERE rated_matches>0 ORDER BY rating DESC, username LIMIT 1 OFFSET ?";
-            try (PreparedStatement ps = connection.prepareStatement(sql)) {
-                ps.setInt(1, position - 1);
-
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        String username = rs.getString("username");
-                        int rating = rs.getInt("rating");
-                        return username + " (" + rating + ")";
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            plugin.getLogger().severe("Fehler bei getTop(" + position + ")");
-            e.printStackTrace();
+        TopPlayerData data = getTopPlayerData(position);
+        if (data != null) {
+            return data.getUsername() + " (" + data.getElo() + ")";
         }
-
         return "N/A";
     }
     public int getPeakElo(UUID uuid) {
@@ -309,6 +290,43 @@ public class ChessCraftService {
         }
 
         return "Unknown";
+    }
+    public TopPlayerData getTopPlayerData(int position) {
+        try {
+            if (connection == null || connection.isClosed()) {
+                connect();
+            }
+
+            String sql = """
+                SELECT username, displayname, rating, peak_rating, rated_matches
+                FROM chesscraft_players
+                WHERE rated_matches > 0
+                ORDER BY rating DESC, username
+                LIMIT 1 OFFSET ?
+                """;
+
+            try (PreparedStatement ps = connection.prepareStatement(sql)) {
+                ps.setInt(1, position - 1);
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return new TopPlayerData(
+                                rs.getString("username"),
+                                rs.getString("displayname"),
+                                rs.getInt("rating"),
+                                rs.getInt("peak_rating"),
+                                rs.getInt("rated_matches")
+                        );
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            plugin.getLogger().severe("Fehler bei getTopPlayerData(" + position + ")");
+            e.printStackTrace();
+        }
+
+        return null;
     }
     public void close() {
         try {
