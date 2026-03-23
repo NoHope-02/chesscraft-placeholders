@@ -35,7 +35,7 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return "1.2.0";
+        return "1.2.0-SNAPSHOT";
     }
 
     @Override
