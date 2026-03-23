@@ -74,6 +74,17 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
 
             case "displayname":
                 return service.getDisplayname(player.getUniqueId());
+            case "last_side":
+                return service.getLastSide(player.getUniqueId());
+
+            case "last_type":
+                return service.getLastType(player.getUniqueId());
+
+            case "last_updated":
+                return service.getLastUpdated(player.getUniqueId());
+
+            case "last_moves_count":
+                return String.valueOf(service.getLastMovesCount(player.getUniqueId()));
 
             default:
                 if (identifier.toLowerCase().startsWith("top_")) {

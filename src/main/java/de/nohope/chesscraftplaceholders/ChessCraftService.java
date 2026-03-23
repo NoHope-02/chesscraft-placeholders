@@ -150,6 +150,7 @@ public class ChessCraftService {
            chesscraft_matches.black_cpu,
            chesscraft_matches.black_player_id,
            chesscraft_matches.last_updated,
+           chesscraft_matches.moves,
            chesscraft_complete_matches.result_type,
            chesscraft_complete_matches.result_color,
            chesscraft_complete_matches.white_elo_change,
@@ -196,10 +197,18 @@ public class ChessCraftService {
                     } else {
                         opponent = whiteCpu ? "CPU" : getUsername(whitePlayerId);
                     }
+                    String side = isWhite ? "white" : "black";
+
+                    String type = (whiteCpu || blackCpu) ? "cpu" : "pvp";
+
+                    String updated = rs.getTimestamp("last_updated").toString();
+
+                    String moves = rs.getString("moves");
+                    int movesCount = (moves == null || moves.isBlank()) ? 0 : moves.split(",").length;
 
                     String result = parseResult(isWhite, resultColor, resultType, eloChange);
 
-                    return new LastMatchData(result, opponent, eloChange);
+                    return new LastMatchData(result, opponent, eloChange, side, type, updated, movesCount);
                 }
             }
         } catch (SQLException e) {
@@ -327,6 +336,25 @@ public class ChessCraftService {
         }
 
         return null;
+    }
+    public String getLastSide(UUID uuid) {
+        LastMatchData data = getLastMatchData(uuid);
+        return data != null ? data.getSide() : "none";
+    }
+
+    public String getLastType(UUID uuid) {
+        LastMatchData data = getLastMatchData(uuid);
+        return data != null ? data.getType() : "none";
+    }
+
+    public String getLastUpdated(UUID uuid) {
+        LastMatchData data = getLastMatchData(uuid);
+        return data != null ? data.getUpdated() : "none";
+    }
+
+    public int getLastMovesCount(UUID uuid) {
+        LastMatchData data = getLastMatchData(uuid);
+        return data != null ? data.getMovesCount() : 0;
     }
     public void close() {
         try {
