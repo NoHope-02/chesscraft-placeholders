@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
+
 public class ChessCraftPlaceholder extends PlaceholderExpansion {
 
     private final Main plugin;
@@ -35,7 +37,7 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return "1.2.0-SNAPSHOT";
+        return "1.2.0-SNAPSHOTv2";
     }
 
     @Override
@@ -144,6 +146,28 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
                             }
                         }
 
+                    } catch (NumberFormatException e) {
+                        return null;
+                    }
+                }
+                if (identifier.toLowerCase().startsWith("history_")) {
+                    String[] parts = identifier.toLowerCase().split("_");
+
+                    try {
+                        if (parts.length == 3) {
+                            int pos = Integer.parseInt(parts[1]);
+                            String field = parts[2];
+                            HistoryData data = service.getHistoryData(player.getUniqueId(), pos);
+                            if (data == null) {
+                                return "none";
+                            }
+                            switch (field) {
+                                case "result":
+                                    return String.valueOf(data.getResult());
+                                    default:
+                                        return null;
+                            }
+                        }
                     } catch (NumberFormatException e) {
                         return null;
                     }

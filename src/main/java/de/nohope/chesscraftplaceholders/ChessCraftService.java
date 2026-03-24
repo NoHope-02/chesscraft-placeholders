@@ -393,6 +393,104 @@ public class ChessCraftService {
         LastMatchData data = getLastMatchData(uuid);
         return data != null ? data.getOpponentEloAfter() : 0;
     }
+    public HistoryData getHistoryData(UUID playerUuid, int index) {
+        String sql = """
+    SELECT chesscraft_complete_matches.white_elo,
+           chesscraft_complete_matches.black_elo,
+           chesscraft_complete_matches.result_type,
+           chesscraft_complete_matches.result_color,
+           chesscraft_complete_matches.white_elo_change,
+           chesscraft_complete_matches.black_elo_change,
+           chesscraft_matches.white_cpu,
+           chesscraft_matches.white_player_id,
+           chesscraft_matches.black_cpu,
+           chesscraft_matches.black_player_id,
+           chesscraft_matches.last_updated,
+           chesscraft_matches.moves
+    FROM chesscraft_matches
+    RIGHT OUTER JOIN chesscraft_complete_matches
+        ON chesscraft_matches.id = chesscraft_complete_matches.id
+    WHERE white_player_id = ? OR black_player_id = ?
+    ORDER BY chesscraft_matches.last_updated DESC
+    LIMIT 1 OFFSET ?
+    """;
+
+        try {
+            if (connection == null || connection.isClosed()) {
+                connect();
+            }
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, playerUuid.toString());
+                stmt.setString(2, playerUuid.toString());
+                stmt.setInt(3, index - 1);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (!rs.next()) {
+                        return null;
+                    }
+
+                    UUID whitePlayerId = rs.getObject("white_player_id", UUID.class);
+                    UUID blackPlayerId = rs.getObject("black_player_id", UUID.class);
+                    boolean whiteCpu = rs.getBoolean("white_cpu");
+                    boolean blackCpu = rs.getBoolean("black_cpu");
+
+                    boolean isWhite = playerUuid.equals(whitePlayerId);
+
+                    String resultColor = rs.getString("result_color");
+                    String resultType = rs.getString("result_type");
+
+                    int eloChange = isWhite
+                            ? rs.getInt("white_elo_change")
+                            : rs.getInt("black_elo_change");
+
+                    String opponent;
+                    String opponentDisplayname;
+
+                    if (isWhite) {
+                        if (blackCpu) {
+                            opponent = "CPU";
+                            opponentDisplayname = "CPU";
+                        } else {
+                            opponent = getUsername(blackPlayerId);
+                            opponentDisplayname = getDisplayname(blackPlayerId);
+                        }
+                    } else {
+                        if (whiteCpu) {
+                            opponent = "CPU";
+                            opponentDisplayname = "CPU";
+                        } else {
+                            opponent = getUsername(whitePlayerId);
+                            opponentDisplayname = getDisplayname(whitePlayerId);
+                        }
+                    }
+                    String side = isWhite ? "white" : "black";
+
+                    String type = (whiteCpu || blackCpu) ? "cpu" : "pvp";
+
+                    String updated = rs.getTimestamp("last_updated").toString();
+
+                    String moves = rs.getString("moves");
+                    int movesCount = (moves == null || moves.isBlank()) ? 0 : moves.split(",").length;
+
+                    String result = parseResult(resultType, eloChange);
+
+                    int eloAfter = isWhite
+                            ? rs.getInt("white_elo")
+                            : rs.getInt("black_elo");
+
+                    int opponentEloAfter = isWhite
+                            ? rs.getInt("black_elo")
+                            : rs.getInt("white_elo");
+
+                    return new HistoryData(result);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
     public void close() {
         try {
             if (connection != null && !connection.isClosed()) {
