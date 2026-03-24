@@ -226,13 +226,18 @@ public class ChessCraftService {
 
                     String result = parseResult(resultType, eloChange);
 
-                    int eloAfter = isWhite
-                            ? rs.getInt("white_elo")
-                            : rs.getInt("black_elo");
+                    int whiteElo = rs.getInt("white_elo");
+                    int blackElo = rs.getInt("black_elo");
+                    int whiteEloChange = rs.getInt("white_elo_change");
+                    int blackEloChange = rs.getInt("black_elo_change");
 
-                    int opponentEloAfter = isWhite
-                            ? rs.getInt("black_elo")
-                            : rs.getInt("white_elo");
+                    int eloAfter;
+                    if (isWhite) eloAfter = whiteElo + whiteEloChange;
+                    else eloAfter = blackElo + blackEloChange;
+
+                    int opponentEloAfter;
+                    if (isWhite) opponentEloAfter = blackElo + blackEloChange;
+                    else opponentEloAfter = whiteElo + whiteEloChange;
 
                     return new LastMatchData(result, opponent, eloChange, side, type, updated, movesCount,opponentDisplayname,eloAfter,opponentEloAfter);
                 }
@@ -474,13 +479,18 @@ public class ChessCraftService {
 
                     String result = parseResult(resultType, eloChange);
 
-                    int eloAfter = isWhite
-                            ? rs.getInt("white_elo")
-                            : rs.getInt("black_elo");
+                    int whiteElo = rs.getInt("white_elo");
+                    int blackElo = rs.getInt("black_elo");
+                    int whiteEloChange = rs.getInt("white_elo_change");
+                    int blackEloChange = rs.getInt("black_elo_change");
 
-                    int opponentEloAfter = isWhite
-                            ? rs.getInt("black_elo")
-                            : rs.getInt("white_elo");
+                    int eloAfter;
+                    if (isWhite) eloAfter = whiteElo + whiteEloChange;
+                    else eloAfter = blackElo + blackEloChange;
+
+                    int opponentEloAfter;
+                    if (isWhite) opponentEloAfter = blackElo + blackEloChange;
+                    else opponentEloAfter = whiteElo + whiteEloChange;
 
                     return new HistoryData(result, opponent, eloChange, side, type, updated, movesCount,opponentDisplayname,eloAfter,opponentEloAfter);
                 }
