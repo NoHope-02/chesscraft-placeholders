@@ -1,5 +1,10 @@
 # ♟️ ChessCraft Placeholders
 
+![Version](https://img.shields.io/badge/version-1.0-blue)
+![Platform](https://img.shields.io/badge/platform-Paper-ff9f43)
+![API](https://img.shields.io/badge/PlaceholderAPI-required-orange)
+![Status](https://img.shields.io/badge/status-active-success)
+
 A **PlaceholderAPI addon** for [ChessCraft](https://github.com/jpenilla/chesscraft)  
 providing player stats, leaderboard data and match information.
 
@@ -8,75 +13,75 @@ providing player stats, leaderboard data and match information.
 ## ✨ Features
 
 - 📊 Player stats (Elo, peak Elo, rank, matches)
-- 🏆 Advanced leaderboard placeholders
-- ♟️ Detailed last match information
-- 🧠 Clean and lightweight implementation
-- ⚡ Works directly with the ChessCraft database
+- 🏆 Leaderboard placeholders
+- ♟️ Last match data
+- 📜 Match history *(WIP)*
+- ⚡ Direct database access (no API dependency)
 
 ---
 
 ## 📦 Placeholders
 
 ### 👤 Player
-
-| Placeholder | Description |
-|------------|------------|
-| `%chesscraft_username%` | Player username |
-| `%chesscraft_displayname%` | Player display name |
-| `%chesscraft_elo%` | Current Elo |
-| `%chesscraft_peak_elo%` | Highest reached Elo |
-| `%chesscraft_rank%` | Leaderboard rank |
-| `%chesscraft_rated_matches%` | Number of rated matches |
+`%chesscraft_username%`  
+`%chesscraft_displayname%`  
+`%chesscraft_elo%`  
+`%chesscraft_peak_elo%`  
+`%chesscraft_rank%`  
+`%chesscraft_rated_matches%`
 
 ---
 
 ### 🏆 Leaderboard
+`%chesscraft_top_1%` → `%chesscraft_top_10%`
 
-| Placeholder | Description |
-|------------|------------|
-| `%chesscraft_top_1%` → `%chesscraft_top_10%` | Formatted top players |
-| `%chesscraft_top_1_name%` | Username of player |
-| `%chesscraft_top_1_displayname%` | Display name |
-| `%chesscraft_top_1_elo%` | Current Elo |
-| `%chesscraft_top_1_peak_elo%` | Peak Elo |
-| `%chesscraft_top_1_rated_matches%` | Rated matches |
-
-👉 Works dynamically for any position (e.g. `top_2`, `top_5`, etc.)
+Fields:
+- `_name`
+- `_displayname`
+- `_elo`
+- `_peak_elo`
+- `_rated_matches`
 
 ---
 
 ### ♟️ Last Match
+`%chesscraft_last_result%`  
+`%chesscraft_last_opponent%`  
+`%chesscraft_last_opponent_displayname%`  
+`%chesscraft_last_elo_change%`  
+`%chesscraft_last_elo_after%`  
+`%chesscraft_last_opponent_elo_after%`  
+`%chesscraft_last_side%`  
+`%chesscraft_last_type%`  
+`%chesscraft_last_updated%`  
+`%chesscraft_last_moves_count%`
 
-| Placeholder | Description |
-|------------|------------|
-| `%chesscraft_last_result%` | win / loss / draw |
-| `%chesscraft_last_opponent%` | Opponent username |
-| `%chesscraft_last_opponent_displayname%` | Opponent display name |
-| `%chesscraft_last_elo_change%` | Elo change |
-| `%chesscraft_last_elo_after%` | Player Elo after match |
-| `%chesscraft_last_opponent_elo_after%` | Opponent Elo after match |
-| `%chesscraft_last_side%` | white / black |
-| `%chesscraft_last_type%` | pvp / cpu |
-| `%chesscraft_last_updated%` | Timestamp of match |
-| `%chesscraft_last_moves_count%` | Number of moves |
+---
+
+### 📜 History *(WIP)*
+`%chesscraft_history_1_result%`  
+`%chesscraft_history_1_opponent%`  
+`%chesscraft_history_1_opponent_displayname%`  
+`%chesscraft_history_1_elo_change%`
+
+→ Works for any index (`history_1`, `history_2`, ...)
 
 ---
 
 ## 🔧 Requirements
 
-- ✅ Paper **1.21.4** *(tested)*
-- ⚠️ Other versions may work but are untested
-- ✅ [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/)
-- ✅ [ChessCraft](https://github.com/jpenilla/chesscraft)
+- Paper **1.21.4** *(tested)*
+- [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/)
+- [ChessCraft](https://github.com/jpenilla/chesscraft)
 
 ---
 
 ## 🚀 Installation
 
-1. Download the latest release
-2. Place the `.jar` file into your `/plugins` folder
-3. Restart your server
-4. Run: /papi reload
+1. Download latest release
+2. Put `.jar` into `/plugins`
+3. Restart server
+4. `/papi reload`
 
 ---
 
@@ -90,3 +95,10 @@ Last Match:
 %chesscraft_last_result% vs %chesscraft_last_opponent%
 (+%chesscraft_last_elo_change%)
 
+---
+
+## 🧠 Notes
+
+- Elo after match = `elo + elo_change`
+- All values are player-perspective based
+- History system is still expanding
