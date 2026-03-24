@@ -3,6 +3,7 @@
 ![Version](https://img.shields.io/badge/version-1.2.0_SNAPSHOTv2-blue)
 ![Platform](https://img.shields.io/badge/platform-Paper-ff9f43)
 ![API](https://img.shields.io/badge/PlaceholderAPI-required-orange)
+![API](https://img.shields.io/badge/ChessCraft-required-orange)
 ![Status](https://img.shields.io/badge/status-active-success)
 
 A **PlaceholderAPI addon** for [ChessCraft](https://github.com/jpenilla/chesscraft)  
