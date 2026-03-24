@@ -8,6 +8,10 @@ import java.io.File;
 import java.sql.*;
 import java.util.UUID;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+
 public class ChessCraftService {
 
     private final Main plugin;
@@ -16,6 +20,28 @@ public class ChessCraftService {
     public ChessCraftService(Main plugin) {
         this.plugin = plugin;
         connect();
+    }
+    public int getWins(UUID uuid) {
+        return getPlayerStatsData(uuid).getWins();
+    }
+    public int getLosses(UUID uuid) {
+        return getPlayerStatsData(uuid).getLosses();
+    }
+
+    public int getDraws(UUID uuid) {
+        return getPlayerStatsData(uuid).getDraws();
+    }
+
+    public int getPvpWins(UUID uuid) {
+        return getPlayerStatsData(uuid).getPvpWins();
+    }
+
+    public int getCpuWins(UUID uuid) {
+        return getPlayerStatsData(uuid).getCpuWins();
+    }
+
+    public String getWinrate(UUID uuid) {
+        return String.format("%.2f", getPlayerStatsData(uuid).getWinrate());
     }
 
     private void connect() {
@@ -318,7 +344,19 @@ public class ChessCraftService {
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
-                        return rs.getString("displayname");
+                        String raw = rs.getString("displayname");
+
+                        if (raw == null || raw.isBlank()) {
+                            return "Unknown";
+                        }
+
+                        // Wenn es JSON ist → Text extrahieren
+                        if (raw.startsWith("{")) {
+                            return extractPlainText(raw);
+                        }
+
+                        // sonst normal zurückgeben
+                        return raw;
                     }
                 }
             }
@@ -328,6 +366,27 @@ public class ChessCraftService {
 
         return "Unknown";
     }
+
+    private String extractPlainText(String json) {
+        StringBuilder result = new StringBuilder();
+
+        try {
+            // sehr einfache "text":"..." extraction
+            String[] parts = json.split("\"text\":\"");
+
+            for (int i = 1; i < parts.length; i++) {
+                String textPart = parts[i].split("\"")[0];
+                result.append(textPart);
+            }
+
+        } catch (Exception ignored) {
+            return json; // fallback: original zurückgeben
+        }
+
+        String finalText = result.toString().trim();
+        return finalText.isEmpty() ? "Unknown" : finalText;
+    }
+
     public TopPlayerData getTopPlayerData(int position) {
         try {
             if (connection == null || connection.isClosed()) {
@@ -500,6 +559,81 @@ public class ChessCraftService {
         }
 
         return null;
+    }
+    public PlayerStatsData getPlayerStatsData(UUID playerUuid) {
+        String sql = """
+        SELECT chesscraft_matches.white_player_id,
+               chesscraft_matches.black_player_id,
+               chesscraft_matches.white_cpu,
+               chesscraft_matches.black_cpu,
+               chesscraft_complete_matches.white_elo_change,
+               chesscraft_complete_matches.black_elo_change,
+               chesscraft_complete_matches.result_type
+        FROM chesscraft_matches
+        RIGHT OUTER JOIN chesscraft_complete_matches
+            ON chesscraft_matches.id = chesscraft_complete_matches.id
+        WHERE white_player_id = ? OR black_player_id = ?
+        """;
+
+        int wins = 0;
+        int losses = 0;
+        int draws = 0;
+        int pvpWins = 0;
+        int cpuWins = 0;
+
+        try {
+            if (connection == null || connection.isClosed()) {
+                connect();
+            }
+
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, playerUuid.toString());
+                stmt.setString(2, playerUuid.toString());
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        UUID whitePlayerId = rs.getObject("white_player_id", UUID.class);
+                        UUID blackPlayerId = rs.getObject("black_player_id", UUID.class);
+                        boolean whiteCpu = rs.getBoolean("white_cpu");
+                        boolean blackCpu = rs.getBoolean("black_cpu");
+
+                        boolean isWhite = playerUuid.equals(whitePlayerId);
+
+                        int eloChange = isWhite
+                                ? rs.getInt("white_elo_change")
+                                : rs.getInt("black_elo_change");
+
+                        String resultType = rs.getString("result_type");
+                        String result = parseResult(resultType, eloChange);
+
+                        boolean isCpuMatch = whiteCpu || blackCpu;
+                        boolean isPvpMatch = !isCpuMatch;
+
+                        switch (result) {
+                            case "win":
+                                wins++;
+                                if (isPvpMatch) {
+                                    pvpWins++;
+                                } else {
+                                    cpuWins++;
+                                }
+                                break;
+
+                            case "loss":
+                                losses++;
+                                break;
+
+                            case "draw":
+                                draws++;
+                                break;
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PlayerStatsData(wins, losses, draws, pvpWins, cpuWins);
     }
     public void close() {
         try {

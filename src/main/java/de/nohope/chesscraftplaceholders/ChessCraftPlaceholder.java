@@ -36,7 +36,7 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return "1.2.0-SNAPSHOTv2";
+        return "1.2.0";
     }
 
     @Override
@@ -75,6 +75,7 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
 
             case "displayname":
                 return service.getDisplayname(player.getUniqueId());
+
             case "last_side":
                 return service.getLastSide(player.getUniqueId());
 
@@ -94,6 +95,23 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
 
             case "last_opponent_elo_after":
                 return String.valueOf(service.getLastOpponentEloAfter(player.getUniqueId()));
+            case "wins":
+                return String.valueOf(service.getWins(player.getUniqueId()));
+
+            case "losses":
+                return String.valueOf(service.getLosses(player.getUniqueId()));
+
+            case "draws":
+                return String.valueOf(service.getDraws(player.getUniqueId()));
+
+            case "winrate":
+                return service.getWinrate(player.getUniqueId());
+
+            case "pvp_wins":
+                return String.valueOf(service.getPvpWins(player.getUniqueId()));
+
+            case "cpu_wins":
+                return String.valueOf(service.getCpuWins(player.getUniqueId()));
 
             default:
                 if (identifier.toLowerCase().startsWith("top_")) {
@@ -171,12 +189,35 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
                                     return String.valueOf(data.getType());
                                 case "updated":
                                     return String.valueOf(data.getUpdated());
+                                case "summary":
+                                    if (data == null) return "none";
 
-                                    default:
-                                        return null;
+                                    String result = switch (data.getResult()) {
+                                        case "win" -> "§aW";
+                                        case "loss" -> "§cL";
+                                        default -> "§7D";
+                                    };
+                                    String opponent = data.getOpponentDisplayname();
+                                    if (opponent == null || opponent.equalsIgnoreCase("Unknown")) {
+                                        opponent = data.getOpponent();
+                                    }
+                                    change = data.getEloChange();
+                                    String eloChange;
+                                    if (change > 0) {
+                                        eloChange = "+" + change;
+                                    } else {
+                                        eloChange = String.valueOf(change);
+                                    }
+                                    String summary = result + " vs " + opponent + " (" + eloChange + ")";
+                                    return summary;
+                                default:
                             }
-                        }
-                        if (parts.length == 4) {
+                            return null;
+                            }
+                        } catch (NumberFormatException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if (parts.length == 4) {
                             int pos = Integer.parseInt(parts[1]);
                             String field = parts[2] + "_" + parts[3];
                             HistoryData data = service.getHistoryData(player.getUniqueId(), pos);
@@ -210,7 +251,6 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
                                     return null;
                             }
                         }
-                    } catch (NumberFormatException e) {
                         return null;
                     }
                 }
@@ -218,4 +258,3 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
                 return null;
         }
     }
-}
