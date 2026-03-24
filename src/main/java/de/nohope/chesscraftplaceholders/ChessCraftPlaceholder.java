@@ -164,8 +164,51 @@ public class ChessCraftPlaceholder extends PlaceholderExpansion {
                             switch (field) {
                                 case "result":
                                     return String.valueOf(data.getResult());
+                                case "opponent":
+                                    return String.valueOf(data.getOpponent());
+                                case "side":
+                                    return String.valueOf(data.getSide());
+                                case "type":
+                                    return String.valueOf(data.getType());
+                                case "updated":
+                                    return String.valueOf(data.getUpdated());
+
                                     default:
                                         return null;
+                            }
+                        }
+                        if (parts.length == 4) {
+                            int pos = Integer.parseInt(parts[1]);
+                            String field = parts[2] + "_" + parts[3];
+                            HistoryData data = service.getHistoryData(player.getUniqueId(), pos);
+                            if (data == null) {
+                                return "none";
+                            }
+                            switch (field) {
+                            case "elo_change":
+                                change = service.getLastEloChange(player.getUniqueId());
+                                return change > 0 ? "+" + change : String.valueOf(data.getEloChange());
+                            case "moves_count":
+                                return String.valueOf(data.getMovesCount());
+                            case "elo_after":
+                                return String.valueOf(data.getEloAfter());
+                            case "opponent_displayname":
+                                return String.valueOf(data.getOpponentDisplayname());
+                            default:
+                                return null;
+                            }
+                        }         if (parts.length == 5) {
+                            int pos = Integer.parseInt(parts[1]);
+                            String field = parts[2] + "_" + parts[3] + "_" + parts[4];
+                            HistoryData data = service.getHistoryData(player.getUniqueId(), pos);
+                            if (data == null) {
+                                return "none";
+                            }
+                            switch (field) {
+                                case "opponent_elo_after":
+                                    return String.valueOf(data.getOpponentEloAfter());
+                                default:
+                                    return null;
                             }
                         }
                     } catch (NumberFormatException e) {

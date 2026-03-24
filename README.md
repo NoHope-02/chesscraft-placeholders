@@ -89,11 +89,4 @@ Rank: %chesscraft_rank%
 Last Match:
 %chesscraft_last_result% vs %chesscraft_last_opponent%
 (+%chesscraft_last_elo_change%)
-♔ Chess Stats ♔
 
-Elo: %chesscraft_elo%
-Rank: %chesscraft_rank%
-
-Last Match:
-%chesscraft_last_result% vs %chesscraft_last_opponent%
-(+%chesscraft_last_elo_change%)

@@ -482,7 +482,7 @@ public class ChessCraftService {
                             ? rs.getInt("black_elo")
                             : rs.getInt("white_elo");
 
-                    return new HistoryData(result);
+                    return new HistoryData(result, opponent, eloChange, side, type, updated, movesCount,opponentDisplayname,eloAfter,opponentEloAfter);
                 }
             }
         } catch (SQLException e) {
