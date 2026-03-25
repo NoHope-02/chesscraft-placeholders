@@ -29,6 +29,7 @@ public class Main extends JavaPlugin {
         return chessCraftService;
     }
 
+    @Override
     public void onDisable() {
         if (chessCraftService != null) {
             chessCraftService.close();

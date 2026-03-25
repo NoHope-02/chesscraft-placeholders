@@ -13,8 +13,8 @@ public class HistoryData {
     private final int opponentEloAfter;
 
     public HistoryData(String result, String opponent, int eloChange, String side, String type,
-                         String updated, int movesCount, String opponentDisplayname,
-                         int eloAfter, int opponentEloAfter) {
+                       String updated, int movesCount, String opponentDisplayname,
+                       int eloAfter, int opponentEloAfter) {
         this.result = result;
         this.opponent = opponent;
         this.eloChange = eloChange;

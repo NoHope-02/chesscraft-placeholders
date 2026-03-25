@@ -1,6 +1,6 @@
 # ♟️ ChessCraft Placeholders
 
-![Version](https://img.shields.io/badge/version-1.2.0_SNAPSHOTv2-blue)
+![Version](https://img.shields.io/badge/version-1.2.0-blue)
 ![Platform](https://img.shields.io/badge/platform-Paper-ff9f43)
 ![API](https://img.shields.io/badge/PlaceholderAPI-required-orange)
 ![API](https://img.shields.io/badge/ChessCraft-required-orange)
@@ -13,59 +13,26 @@ providing player stats, leaderboard data and match information.
 
 ## ✨ Features
 
-- 📊 Player stats (Elo, peak Elo, rank, matches)
+- 📊 Player stats (Elo, peak Elo, rank, winrate, streaks)
 - 🏆 Leaderboard placeholders
 - ♟️ Last match data
-- 📜 Match history *(WIP)*
+- 📜 Full match history
 - ⚡ Direct database access (no API dependency)
+- 🚀 Built-in caching for better performance
 
 ---
 
 ## 📦 Placeholders
 
-### 👤 Player
-`%chesscraft_username%`  
-`%chesscraft_displayname%`  
-`%chesscraft_elo%`  
-`%chesscraft_peak_elo%`  
-`%chesscraft_rank%`  
-`%chesscraft_rated_matches%`
+👉 Full list: [PLACEHOLDERS.md](./PLACEHOLDERS.md)
 
----
+### Example Placeholders
 
-### 🏆 Leaderboard
-`%chesscraft_top_1%` → `%chesscraft_top_10%`
-
-Fields:
-- `_name`
-- `_displayname`
-- `_elo`
-- `_peak_elo`
-- `_rated_matches`
-
----
-
-### ♟️ Last Match
-`%chesscraft_last_result%`  
-`%chesscraft_last_opponent%`  
-`%chesscraft_last_opponent_displayname%`  
-`%chesscraft_last_elo_change%`  
-`%chesscraft_last_elo_after%`  
-`%chesscraft_last_opponent_elo_after%`  
-`%chesscraft_last_side%`  
-`%chesscraft_last_type%`  
-`%chesscraft_last_updated%`  
-`%chesscraft_last_moves_count%`
-
----
-
-### 📜 History *(WIP)*
-`%chesscraft_history_1_result%`  
-`%chesscraft_history_1_opponent%`  
-`%chesscraft_history_1_opponent_displayname%`  
-`%chesscraft_history_1_elo_change%`
-
-→ Works for any index (`history_1`, `history_2`, ...)
+- `%chesscraft_elo%`
+- `%chesscraft_rank%`
+- `%chesscraft_winrate%`
+- `%chesscraft_last_result%`
+- `%chesscraft_top_1%`
 
 ---
 
@@ -94,7 +61,7 @@ Rank: %chesscraft_rank%
 
 Last Match:
 %chesscraft_last_result% vs %chesscraft_last_opponent%
-(+%chesscraft_last_elo_change%)
+(%chesscraft_last_elo_change%)
 
 ---
 
@@ -102,4 +69,4 @@ Last Match:
 
 - Elo after match = `elo + elo_change`
 - All values are player-perspective based
-- History system is still expanding
+- Data is cached to reduce database load

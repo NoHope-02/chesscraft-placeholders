@@ -54,6 +54,7 @@ public class LastMatchData {
     public int getMovesCount() {
         return movesCount;
     }
+
     public String getOpponentDisplayname() {
         return opponentDisplayname;
     }
